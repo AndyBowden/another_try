@@ -202,6 +202,8 @@ class Ecoflow:
 
         # get info from PV strings  => JTS1_EMS_HEARTBEAT
         sensors = self.__get_sensors_ems_heartbeat(response, sensors)
+        
+        _LOGGER.debug(f"sensors_origback__{sensors}")
 
         return sensors
 
