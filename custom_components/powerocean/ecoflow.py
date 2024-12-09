@@ -478,7 +478,7 @@ class Ecoflow:
 
         return sensors
         
-   def _get_serial_numbers(self, response):
+    def _get_serial_numbers(self, response):
       
         p = response["data"]["parallel"]
         _LOGGER.debug(f"parallel_present__{len(p)}")
