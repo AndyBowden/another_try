@@ -1,5 +1,5 @@
 """ecoflow.py: API for PowerOcean integration."""
-
+""" ajb restart 1"""
 import requests
 import base64
 import re
@@ -189,6 +189,8 @@ class Ecoflow:
     def _get_sensors(self, response):
         # get sensors from response['data']
         sensors = self.__get_sensors_data(response)
+        serials = self._get_serial_numbers(response)
+        _LOGGER.debug(f"serials_found__{sensors}")
 
         # get sensors from 'JTS1_ENERGY_STREAM_REPORT'
         # sensors = self.__get_sensors_energy_stream(response, sensors)  # is currently not in use
@@ -475,6 +477,33 @@ class Ecoflow:
         dict.update(sensors, data)
 
         return sensors
+        
+   def _get_serial_numbers(self, response):
+      
+        p = response["data"]["parallel"]
+        _LOGGER.debug(f"parallel_present__{len(p)}")
+
+        if len(p) == 0 :
+            return 0
+        
+
+        keys_2 = p.keys()
+        _LOGGER.debug(f"serial_p_keys2__{keys_2}")
+    
+        for key in p.keys():
+            pp = response["data"]["parallel"][key]
+            keys_3 = pp.keys()
+            _LOGGER.debug(f"serial_pp_keys___{keys_3}")
+
+        self.slave_sn = next(iter(keys_2))
+        self.master_sn = next(reversed(keys_2))
+
+        self.master_data = response["data"]["parallel"][self.master_sn]
+        self.slave_data = response["data"]["parallel"][self.slave_sn]
+        
+        return len(p)
+
+
 
 
 class AuthenticationFailed(Exception):
