@@ -208,22 +208,22 @@ class Ecoflow:
         
         _LOGGER.debug(f"system_sensors_found__{sensors}")
 
-        # get sensors from 'JTS1_ENERGY_STREAM_REPORT'
+        # get sensors from master 'JTS1_ENERGY_STREAM_REPORT'
         # sensors = self.__get_sensors_energy_stream(self.master_data, sensors)  # is currently not in use
 
-        # get sensors from 'JTS1_EMS_CHANGE_REPORT'
+        # get sensors from master 'JTS1_EMS_CHANGE_REPORT'
         # siehe parameter_selected.json    #  get bpSoc from ems_change
         
         sensors = self.__get_sensors_ems_change(self.master_data, sensors)
 
         _LOGGER.debug(f"change_sensors_found__{sensors}")
 
-        # get info from batteries  => JTS1_BP_STA_REPORT
+        # get info from master batteries  => JTS1_BP_STA_REPORT
         sensors = self.__get_sensors_battery(self.master_data, sensors)
         
         _LOGGER.debug(f"battery_sensors_found__{sensors}")
 
-        # get info from PV strings  => JTS1_EMS_HEARTBEAT
+        # get info from master PV strings  => JTS1_EMS_HEARTBEAT
         sensors = self.__get_sensors_ems_heartbeat(self.master_data, sensors)
         
         _LOGGER.debug(f"full_sensors__{sensors}")
@@ -308,6 +308,9 @@ class Ecoflow:
         report = "JTS1_EMS_CHANGE_REPORT"
         d = inverter_dataset[report]
 
+        _LOGGER.debug(f"inverter_change_subset__{d}")
+
+
         sens_select = [
             "bpTotalChgEnergy",
             "bpTotalDsgEnergy",
@@ -342,11 +345,14 @@ class Ecoflow:
 
         return sensors
 
-    def __get_sensors_battery(self, response, sensors):
+    def __get_sensors_battery(self, inverter_data, sensors):
         report = "JTS1_BP_STA_REPORT"
         # change to process inverter data set
         
-        d = response[report]
+        d = inverter_data[report]
+        
+        _LOGGER.debug(f"inverter_battery_subset__{d}")
+
         keys = list(d.keys())
 
         # loop over N batteries:
@@ -406,9 +412,12 @@ class Ecoflow:
 
         return sensors
 
-    def __get_sensors_ems_heartbeat(self, response, sensors):
+    def __get_sensors_ems_heartbeat(self, inverter_data, sensors):
         report = "JTS1_EMS_HEARTBEAT"
-        d = response["data"]["quota"][report]
+        d = inverter_data[report]
+
+        _LOGGER.debug(f"inverter_heartbeat_subset__{d}")
+
         # sens_select = d.keys()  # 68 Felder
         sens_select = [
             "bpRemainWatth",
