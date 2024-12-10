@@ -197,8 +197,11 @@ class Ecoflow:
             _LOGGER.debug(f"dual inverter system")
             _LOGGER.debug(f"master_found__{self.master_sn}")
             _LOGGER.debug(f"slave_found__{self.slave_sn}")
+            master_string = "_master"
+            slave_string = "_slave"
         elif serials == 0:
             _LOGGER.debug(f"single inverter system")
+            master_string = ""
         else:
             _LOGGER.debug(f"neither single nor dual inverter system")
             
@@ -214,22 +217,47 @@ class Ecoflow:
         # get sensors from master 'JTS1_EMS_CHANGE_REPORT'
         # siehe parameter_selected.json    #  get bpSoc from ems_change
         
-        sensors = self.__get_sensors_ems_change(self.master_data, sensors, self.master_sn, "_master")
+        sensors = self.__get_sensors_ems_change(self.master_data, sensors, self.master_sn, master_string)
 
         _LOGGER.debug(f"change_sensors_found__{sensors}")
         _LOGGER.debug(f"change_sensors_found__{list(sensors)}")
 
         # get info from master batteries  => JTS1_BP_STA_REPORT
-        sensors = self.__get_sensors_battery(self.master_data, sensors)
+        sensors = self.__get_sensors_battery(self.master_data, sensors, self.master_sn, master_string)
         
         _LOGGER.debug(f"battery_sensors_found__{sensors}")
         _LOGGER.debug(f"battery_sensors_found__{list(sensors)}")
 
         # get info from master PV strings  => JTS1_EMS_HEARTBEAT
-        sensors = self.__get_sensors_ems_heartbeat(self.master_data, sensors)
+        sensors = self.__get_sensors_ems_heartbeat(self.master_data, sensors, self.master_sn, master_string)
         
         _LOGGER.debug(f"full_sensors__{sensors}")
         _LOGGER.debug(f"full_sensors__{list(sensors)}")
+
+        if serials == 2:
+            # get sensors from master 'JTS1_ENERGY_STREAM_REPORT'
+            # sensors = self.__get_sensors_energy_stream(self.slave_data, sensors, self.slave_sn, slave_string)  # is currently not in use
+
+            # get sensors from slave 'JTS1_EMS_CHANGE_REPORT'
+            # siehe parameter_selected.json    #  get bpSoc from ems_change
+        
+            sensors = self.__get_sensors_ems_change(self.slave_data, sensors, self.slave_sn, slave_string)
+
+            _LOGGER.debug(f"change_sensors_found__{sensors}")
+            _LOGGER.debug(f"change_sensors_found__{list(sensors)}")
+
+            # get info from slave batteries  => JTS1_BP_STA_REPORT
+            sensors = self.__get_sensors_battery(self.slave_data, sensors, self.slave_sn, slave_string)
+        
+            _LOGGER.debug(f"battery_sensors_found__{sensors}")
+            _LOGGER.debug(f"battery_sensors_found__{list(sensors)}")
+
+            # get info from slave PV strings  => JTS1_EMS_HEARTBEAT
+            sensors = self.__get_sensors_ems_heartbeat(self.slave_data, sensors, self.slave_sn, slave_string)
+        
+            _LOGGER.debug(f"full_sensors__{sensors}")
+            _LOGGER.debug(f"full_sensors__{list(sensors)}")
+        
 
         return sensors
 
@@ -344,7 +372,7 @@ class Ecoflow:
                     internal_unique_id=unique_id,
                     serial=self.sn,
                     name=f"{self.sn}_{key}",
-                    friendly_name=key,
+                    friendly_name=key + inverter_string,
                     value=value,
                     unit=self.__get_unit(key),
                     description=self.__get_description(key),
@@ -357,7 +385,7 @@ class Ecoflow:
         
         return sensors
 
-    def __get_sensors_battery(self, inverter_data, sensors):
+    def __get_sensors_battery(self, inverter_data, sensors, inverter_sn, inverter_string):
         report = "JTS1_BP_STA_REPORT"
         # change to process inverter data set
         
@@ -397,7 +425,7 @@ class Ecoflow:
                         internal_unique_id=unique_id,
                         serial=self.sn,
                         name=f"{self.sn}_{name + key}",
-                        friendly_name=name + key,
+                        friendly_name=name + key + inverter_string,
                         value=value,
                         unit=self.__get_unit(key),
                         description=description_tmp,
@@ -413,7 +441,7 @@ class Ecoflow:
                 internal_unique_id=unique_id,
                 serial=self.sn,
                 name=f"{self.sn}_{name + key}",
-                friendly_name=name + key,
+                friendly_name=name + key + inverter_string,
                 value=value,
                 unit=self.__get_unit(key),
                 description=description_tmp,
@@ -424,7 +452,7 @@ class Ecoflow:
 
         return sensors
 
-    def __get_sensors_ems_heartbeat(self, inverter_data, sensors):
+    def __get_sensors_ems_heartbeat(self, inverter_data, sensors, inverter_sn, inverter_string):
         report = "JTS1_EMS_HEARTBEAT"
         d = inverter_data[report]
 
@@ -449,7 +477,7 @@ class Ecoflow:
                     internal_unique_id=unique_id,
                     serial=self.sn,
                     name=f"{self.sn}_{key}",
-                    friendly_name=key,
+                    friendly_name=key + inverter_string,
                     value=value,
                     unit=self.__get_unit(key),
                     description=description_tmp,
@@ -467,7 +495,7 @@ class Ecoflow:
                     internal_unique_id=unique_id,
                     serial=self.sn,
                     name=f"{self.sn}_{name}",
-                    friendly_name=f"{name}",
+                    friendly_name=f"{name}{inverter_string}",
                     value=value,
                     unit=self.__get_unit(key),
                     description=self.__get_description(key),
@@ -511,7 +539,7 @@ class Ecoflow:
             internal_unique_id=unique_id,
             serial=self.sn,
             name=f"{self.sn}_{name}",
-            friendly_name=f"{name}",
+            friendly_name=f"{name}{inverter_string}",
             value=mpptPv_sum,
             unit=self.__get_unit(key),
             description="Solarertrag aller Strings",
