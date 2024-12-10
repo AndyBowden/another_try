@@ -498,6 +498,11 @@ class Ecoflow:
         p = response["data"]
         _LOGGER.debug(f"reponse__{p}")
         _LOGGER.debug(f"keys_present__{p.keys()}")
+        _LOGGER.debug(f"keys_type__{type(p.keys())}")
+
+        if 'parallel' in p.keys():
+            _LOGGER.debug(f"parallel_found")
+            
         
         p = response["data"]["parallel"]
 
