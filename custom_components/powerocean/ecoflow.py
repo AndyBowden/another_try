@@ -202,26 +202,31 @@ class Ecoflow:
         else:
             _LOGGER.debug(f"neither single nor dual inverter system")
             
-        # get sensors from response['data']
+        # get system sensors from response['data']
         
         sensors = self.__get_sensors_data(response)
         
-        _LOGGER.debug(f"no_serials_found__{serials}")
+        _LOGGER.debug(f"system_sensors_found__{sensors}")
 
         # get sensors from 'JTS1_ENERGY_STREAM_REPORT'
         # sensors = self.__get_sensors_energy_stream(self.master_data, sensors)  # is currently not in use
 
         # get sensors from 'JTS1_EMS_CHANGE_REPORT'
         # siehe parameter_selected.json    #  get bpSoc from ems_change
+        
         sensors = self.__get_sensors_ems_change(self.master_data, sensors)
+
+        _LOGGER.debug(f"change_sensors_found__{sensors}")
 
         # get info from batteries  => JTS1_BP_STA_REPORT
         sensors = self.__get_sensors_battery(self.master_data, sensors)
+        
+        _LOGGER.debug(f"battery_sensors_found__{sensors}")
 
         # get info from PV strings  => JTS1_EMS_HEARTBEAT
         sensors = self.__get_sensors_ems_heartbeat(self.master_data, sensors)
         
-        _LOGGER.debug(f"sensors_origback__{sensors}")
+        _LOGGER.debug(f"full_sensors__{sensors}")
 
         return sensors
 
@@ -299,9 +304,9 @@ class Ecoflow:
     #
     #     return sensors
 
-    def __get_sensors_ems_change(self, response, sensors):
+    def __get_sensors_ems_change(self, inverter_dataset, sensors):
         report = "JTS1_EMS_CHANGE_REPORT"
-        d = response["data"]["quota"][report]
+        d = inverter_dataset[report]
 
         sens_select = [
             "bpTotalChgEnergy",
@@ -339,7 +344,9 @@ class Ecoflow:
 
     def __get_sensors_battery(self, response, sensors):
         report = "JTS1_BP_STA_REPORT"
-        d = response["data"]["quota"][report]
+        # change to process inverter data set
+        
+        d = response[report]
         keys = list(d.keys())
 
         # loop over N batteries:
