@@ -504,12 +504,12 @@ class Ecoflow:
             _LOGGER.debug(f"parallel_found")
             
         
-        p = response["data"]["parallel"]
+            p = response["data"]["parallel"]
 
-        if len(p) == 0 :
+        else:
             return 0
         
-
+ 
         keys_2 = p.keys()
         _LOGGER.debug(f"serial_p_keys2__{keys_2}")
     
