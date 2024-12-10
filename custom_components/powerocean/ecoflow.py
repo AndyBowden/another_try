@@ -201,24 +201,25 @@ class Ecoflow:
             _LOGGER.debug(f"single inverter system")
         else:
             _LOGGER.debug(f"neither single nor dual inverter system")
+            
         # get sensors from response['data']
         
         sensors = self.__get_sensors_data(response)
-        serials = self._get_serial_numbers(response)
+        
         _LOGGER.debug(f"no_serials_found__{serials}")
 
         # get sensors from 'JTS1_ENERGY_STREAM_REPORT'
-        # sensors = self.__get_sensors_energy_stream(response, sensors)  # is currently not in use
+        # sensors = self.__get_sensors_energy_stream(self.master_data, sensors)  # is currently not in use
 
         # get sensors from 'JTS1_EMS_CHANGE_REPORT'
         # siehe parameter_selected.json    #  get bpSoc from ems_change
-        sensors = self.__get_sensors_ems_change(response, sensors)
+        sensors = self.__get_sensors_ems_change(self.master_data, sensors)
 
         # get info from batteries  => JTS1_BP_STA_REPORT
-        sensors = self.__get_sensors_battery(response, sensors)
+        sensors = self.__get_sensors_battery(self.master_data, sensors)
 
         # get info from PV strings  => JTS1_EMS_HEARTBEAT
-        sensors = self.__get_sensors_ems_heartbeat(response, sensors)
+        sensors = self.__get_sensors_ems_heartbeat(self.master_data, sensors)
         
         _LOGGER.debug(f"sensors_origback__{sensors}")
 
@@ -500,13 +501,14 @@ class Ecoflow:
         _LOGGER.debug(f"keys_present__{p.keys()}")
         _LOGGER.debug(f"keys_type__{type(p.keys())}")
 
-        if 'balls' in p.keys():
+        if 'parallel' in p.keys():
             _LOGGER.debug(f"parallel_found")
             
         
             p = response["data"]["parallel"]
 
         else:
+            self.master_data = response["data"]["quota"]
             return 0
         
  
