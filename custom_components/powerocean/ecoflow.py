@@ -1,5 +1,5 @@
 """ecoflow.py: API for PowerOcean integration."""
-""" ajb restart 1"""
+""" ajb restart 2"""
 import requests
 import base64
 import re
@@ -190,7 +190,8 @@ class Ecoflow:
         # get sensors from response['data']
         sensors = self.__get_sensors_data(response)
         serials = self._get_serial_numbers(response)
-        _LOGGER.debug(f"serials_found__{sensors}")
+        _LOGGER.debug(f"serials_found__{serials}")
+        _LOGGER.debug(f"no_serials_found__{len(serials)}")
 
         # get sensors from 'JTS1_ENERGY_STREAM_REPORT'
         # sensors = self.__get_sensors_energy_stream(response, sensors)  # is currently not in use
