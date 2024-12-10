@@ -187,11 +187,23 @@ class Ecoflow:
         return description
 
     def _get_sensors(self, response):
+        # check if power ocean system is a dual master slave installation
+        
+        serials = self._get_serial_numbers(response)
+        _LOGGER.debug(f"no_serials_found__{serials}")
+
+        if serials == 2:
+            _LOGGER.debug(f"master_found__{self.master_sn}")
+            _LOGGER.debug(f"slave_found__{self.slave_sn}")
+        elif serials == 0:
+            _LOGGER.debug(f"single inverter system")
+        else"
+            _LOGGER.debug(f"neither single nor dual inverter system")
         # get sensors from response['data']
+        
         sensors = self.__get_sensors_data(response)
         serials = self._get_serial_numbers(response)
-        _LOGGER.debug(f"serials_found__{serials}")
-        _LOGGER.debug(f"no_serials_found__{len(serials)}")
+        _LOGGER.debug(f"no_serials_found__{serials}")
 
         # get sensors from 'JTS1_ENERGY_STREAM_REPORT'
         # sensors = self.__get_sensors_energy_stream(response, sensors)  # is currently not in use
