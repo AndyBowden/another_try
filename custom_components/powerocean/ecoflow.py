@@ -321,6 +321,9 @@ class Ecoflow:
 
         # add mppt Warning/Fault Codes
         keys = d.keys()
+
+        _LOGGER.debug(f"inverter_change_subset_keys__{keys}")
+        
         r = re.compile("mppt.*Code")
         wfc = list(filter(r.match, keys))  # warning/fault code keys
         sens_select += wfc
@@ -330,6 +333,9 @@ class Ecoflow:
             if key in sens_select:  # use only sensors in sens_select
                 # default uid, unit and descript
                 unique_id = f"{self.sn}_{report}_{key}"
+
+                _LOGGER.debug(f"inverter_change_subset_key_found__{key}")
+
 
                 data[unique_id] = PowerOceanEndPoint(
                     internal_unique_id=unique_id,
