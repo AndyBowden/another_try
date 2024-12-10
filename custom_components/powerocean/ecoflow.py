@@ -500,7 +500,7 @@ class Ecoflow:
         _LOGGER.debug(f"keys_present__{p.keys()}")
         _LOGGER.debug(f"keys_type__{type(p.keys())}")
 
-        if 'parallex' in p.keys():
+        if 'balls' in p.keys():
             _LOGGER.debug(f"parallel_found")
             
         
