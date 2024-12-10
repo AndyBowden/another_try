@@ -495,10 +495,10 @@ class Ecoflow:
         
     def _get_serial_numbers(self, response):
       
-        # p = response["data"]["parallel"]
-        p = response["data"]["nonsense"]
+        p = response["data"]
         _LOGGER.debug(f"reponse__{p}")
-        _LOGGER.debug(f"parallel_present__{len(p)}")
+        _LOGGER.debug(f"keys_present__{p(keys)}")
+        p = response["data"]["parallel"]
 
         if len(p) == 0 :
             return 0
