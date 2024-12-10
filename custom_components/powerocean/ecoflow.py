@@ -347,8 +347,11 @@ class Ecoflow:
                     description=self.__get_description(key),
                     icon=None,
                 )
+        _LOGGER.debug(f"inverter_change_additions__{data}")
+        _LOGGER.debug(f"sensors_before__{sensors}")
         dict.update(sensors, data)
-
+        _LOGGER.debug(f"sensors_after__{sensors}")
+        
         return sensors
 
     def __get_sensors_battery(self, inverter_data, sensors):
