@@ -193,6 +193,7 @@ class Ecoflow:
         _LOGGER.debug(f"no_serials_found__{serials}")
 
         if serials == 2:
+            _LOGGER.debug(f"dual inverter system")
     #        _LOGGER.debug(f"master_found__{self.master_sn}")
      #       _LOGGER.debug(f"slave_found__{self.slave_sn}")
         elif serials == 0:
