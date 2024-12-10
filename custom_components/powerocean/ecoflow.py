@@ -217,19 +217,19 @@ class Ecoflow:
         sensors = self.__get_sensors_ems_change(self.master_data, sensors)
 
         _LOGGER.debug(f"change_sensors_found__{sensors}")
-        _LOGGER.debug(f"change_sensors_found__{sensors.keys}")
+        _LOGGER.debug(f"change_sensors_found__{list(sensors.keys)}")
 
         # get info from master batteries  => JTS1_BP_STA_REPORT
         sensors = self.__get_sensors_battery(self.master_data, sensors)
         
         _LOGGER.debug(f"battery_sensors_found__{sensors}")
-        _LOGGER.debug(f"battery_sensors_found__{sensors.keys}")
+        _LOGGER.debug(f"battery_sensors_found__{list(sensors.keys)}")
 
         # get info from master PV strings  => JTS1_EMS_HEARTBEAT
         sensors = self.__get_sensors_ems_heartbeat(self.master_data, sensors)
         
         _LOGGER.debug(f"full_sensors__{sensors}")
-        _LOGGER.debug(f"full_sensors__{sensors.keys}")
+        _LOGGER.debug(f"full_sensors__{list(sensors.keys)}")
 
         return sensors
 
@@ -351,9 +351,9 @@ class Ecoflow:
                     icon=None,
                 )
         _LOGGER.debug(f"inverter_change_additions__{data}")
-        _LOGGER.debug(f"sensors_before__{sensors.keys}")
+        _LOGGER.debug(f"sensors_before__{list(sensors.keys)}")
         dict.update(sensors, data)
-        _LOGGER.debug(f"sensors_after__{sensors.keys}")
+        _LOGGER.debug(f"sensors_after__{list(sensors.keys)}")
         
         return sensors
 
