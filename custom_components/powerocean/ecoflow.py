@@ -197,7 +197,7 @@ class Ecoflow:
      #       _LOGGER.debug(f"slave_found__{self.slave_sn}")
         elif serials == 0:
             _LOGGER.debug(f"single inverter system")
-        else"
+        else:
             _LOGGER.debug(f"neither single nor dual inverter system")
         # get sensors from response['data']
         
