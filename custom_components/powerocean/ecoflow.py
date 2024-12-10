@@ -214,7 +214,7 @@ class Ecoflow:
         # get sensors from master 'JTS1_EMS_CHANGE_REPORT'
         # siehe parameter_selected.json    #  get bpSoc from ems_change
         
-        sensors = self.__get_sensors_ems_change(self.master_data, sensors)
+        sensors = self.__get_sensors_ems_change(self.master_data, sensors, self.master_sn, "_master")
 
         _LOGGER.debug(f"change_sensors_found__{sensors}")
         _LOGGER.debug(f"change_sensors_found__{list(sensors)}")
@@ -307,7 +307,7 @@ class Ecoflow:
     #
     #     return sensors
 
-    def __get_sensors_ems_change(self, inverter_dataset, sensors):
+    def __get_sensors_ems_change(self, inverter_dataset, sensors, inverter_sn, inverter_string):
         report = "JTS1_EMS_CHANGE_REPORT"
         d = inverter_dataset[report]
 
