@@ -1,5 +1,7 @@
 """ecoflow.py: API for PowerOcean integration."""
-""" ajb restart 5"""
+""" modification of niltrip's version to provide for Power Ocean Dual Master/Slave Inverter Installations"""
+""" Andy Bowden Dec 2024
+
 import requests
 import base64
 import re
@@ -521,7 +523,7 @@ class Ecoflow:
                     internal_unique_id=unique_id,
                     serial=self.sn,
                     name=f"{inverter_sn}_{mpptpv}_{key}",
-                    friendly_name=f"{mpptpv}_{key}",
+                    friendly_name=f"{mpptpv}_{key}{inverter_string}",
                     value=value,
                     unit=self.__get_unit(key),
                     description=self.__get_description(key),
