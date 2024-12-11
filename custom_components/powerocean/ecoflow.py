@@ -1,6 +1,6 @@
 """ecoflow.py: API for PowerOcean integration."""
 """ modification of niltrip's version to provide for Power Ocean Dual Master/Slave Inverter Installations"""
-""" Andy Bowden Dec 2024
+""" Andy Bowden Dec 2024 """
 
 import requests
 import base64
