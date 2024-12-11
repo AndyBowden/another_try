@@ -584,7 +584,8 @@ class Ecoflow:
         self.master_data = response["data"]["parallel"][self.master_sn]
         self.slave_data = response["data"]["parallel"][self.slave_sn]
         
-        return len(p)
+  #      return len(p)
+        return 0
 
 
 
