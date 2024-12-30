@@ -252,7 +252,7 @@ class Ecoflow:
             sensors = self.__get_sensors_ems_heartbeat(self.slave_data, sensors, self.slave_sn, slave_string)
         
         _LOGGER.debug(f"log_full_sensor_details__{sensors}")
-        _LOGGER.debug(f"log_sensor_names__{sensors.friendly_name}")
+        _LOGGER.debug(f"log_sensor_names__{list(sensors.friendly_name)}")
         
 
         return sensors
