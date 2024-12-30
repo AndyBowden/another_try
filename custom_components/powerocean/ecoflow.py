@@ -542,37 +542,47 @@ class Ecoflow:
         return sensors
         
     def _get_serial_numbers(self, response):
+
+        # extra function to determine whether installation installation has single or dual inverter
+        # and to create master and slave response segments
       
         p = response["data"]
-        _LOGGER.debug(f"reponse__{p}")
-        _LOGGER.debug(f"keys_present__{p.keys()}")
-        _LOGGER.debug(f"keys_type__{type(p.keys())}")
 
         if 'parallel' in p.keys():
-            _LOGGER.debug(f"parallel_found")
-            
-        
+            # installation is dual inverter one
+            # p portion of response contains master and slave segments
             p = response["data"]["parallel"]
-
         else:
+            # installation is single inverter, create master segment
             self.master_data = response["data"]["quota"]
             return 0
         
- 
+        # get keys of the 'data' segment
         keys_2 = p.keys()
-        _LOGGER.debug(f"serial_p_keys2__{keys_2}")
     
-        for key in p.keys():
-            pp = response["data"]["parallel"][key]
-            keys_3 = pp.keys()
-            _LOGGER.debug(f"serial_pp_keys___{keys_3}")
-
+        # slave serial number is the first key of the 'data' segment
         self.slave_sn = next(iter(keys_2))
+
+        # master serial number is the last key of the 'data' segment
         self.master_sn = next(reversed(keys_2))
 
+        # create master inverter segment
+
         self.master_data = response["data"]["parallel"][self.master_sn]
-        self.slave_data = response["data"]["parallel"][self.slave_sn]
         
+        # create slave inverter segment
+
+        self.slave_data = response["data"]["parallel"][self.slave_sn]
+
+        # return number of segments of the 'parallel' segment
+        # 1 single inverter
+        # 2 dual inverter
+        # neither 1 nor 2 cant 
+
+        _LOGGER.debug(f"returning__{len(p)}")
+        _LOGGER.debug(f"key_found__{p.keys()}")
+        
+
         return len(p)
   
 
