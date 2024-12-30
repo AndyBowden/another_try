@@ -575,13 +575,10 @@ class Ecoflow:
         self.slave_data = response["data"]["parallel"][self.slave_sn]
 
         # return number of segments of the 'parallel' segment
-        # 1 single inverter
-        # 2 dual inverter
-        # neither 1 nor 2 cant 
-
-        _LOGGER.debug(f"returning__{len(p)}")
-        _LOGGER.debug(f"key_found__{p.keys()}")
         
+        # 2 dual inverter
+        # if not 2 can't be handled
+
 
         return len(p)
   
