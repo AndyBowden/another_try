@@ -1,6 +1,6 @@
 """ecoflow.py: API for PowerOcean integration."""
 # modification of niltrip's version to provide for Power Ocean Dual Master/Slave Inverter Installations
-# Andy Bowden Dec 2024 
+# Andy Bowden Jan 2025 
 
 import requests
 import base64
@@ -189,76 +189,70 @@ class Ecoflow:
         return description
 
     def _get_sensors(self, response):
-        # check if power ocean system is a dual master slave installation
+        
+        # check whether power ocean system is a dual master slave installation
         
         serials = self._get_serial_numbers(response)
-        _LOGGER.debug(f"no_serials_found__{serials}")
-
+        
+        _LOGGER.debug(f"no_of_inverters_found_=_{serials}")
+        
+        # if serials = 2, installation is a dual inverter one
+        
         if serials == 2:
             serial_copy = serials
             _LOGGER.debug(f"dual inverter system")
-            _LOGGER.debug(f"master_found__{self.master_sn}")
-            _LOGGER.debug(f"slave_found__{self.slave_sn}")
+            _LOGGER.debug(f"master_SNo__{self.master_sn}")
+            _LOGGER.debug(f"slave_SNo__{self.slave_sn}")
             master_string = "_master"
             slave_string = "_slave"
         elif serials == 0:
+            # if serials = 1, installation is a single inverter
             _LOGGER.debug(f"single inverter system")
             master_string = ""
         else:
-            _LOGGER.debug(f"neither single nor dual inverter system")
+            # if serials is neither 1 nor 2, installation configuration is unknown and integration cannot function
+            _LOGGER.debug(f"neither single nor dual inverter system - aborting")
+            return
             
-        # get system sensors from response['data']
+        # get sensors from response master segment
         
         sensors = self.__get_sensors_data(response)
         
-        _LOGGER.debug(f"system_sensors_found__{list(sensors)}")
-
         # get sensors from master 'JTS1_ENERGY_STREAM_REPORT'
         # sensors = self.__get_sensors_energy_stream(self.master_data, sensors)  # is currently not in use
 
         # get sensors from master 'JTS1_EMS_CHANGE_REPORT'
-        # siehe parameter_selected.json    #  get bpSoc from ems_change
         
         sensors = self.__get_sensors_ems_change(self.master_data, sensors, self.master_sn, master_string)
 
-        _LOGGER.debug(f"change_sensors_found__{sensors}")
-        _LOGGER.debug(f"change_sensors_found__{list(sensors)}")
-
-        # get info from master batteries  => JTS1_BP_STA_REPORT
+        # get info from master segment JTS1_BP_STA_REPORT
+        
         sensors = self.__get_sensors_battery(self.master_data, sensors, self.master_sn, master_string)
         
-        _LOGGER.debug(f"battery_sensors_found__{sensors}")
-        _LOGGER.debug(f"battery_sensors_found__{list(sensors)}")
-
-        # get info from master PV strings  => JTS1_EMS_HEARTBEAT
+        # get info from master segment JTS1_EMS_HEARTBEAT report
+        
         sensors = self.__get_sensors_ems_heartbeat(self.master_data, sensors, self.master_sn, master_string)
         
-        _LOGGER.debug(f"full_sensors__{sensors}")
-        _LOGGER.debug(f"full_sensors__{list(sensors)}")
 
         if serials == 2:
-            # get sensors from master 'JTS1_ENERGY_STREAM_REPORT'
+            # if dual inverter installation, get sensors from response slave segment
+            
+            # get sensors from slave segment 'JTS1_ENERGY_STREAM_REPORT'
             # sensors = self.__get_sensors_energy_stream(self.slave_data, sensors, self.slave_sn, slave_string)  # is currently not in use
 
             # get sensors from slave 'JTS1_EMS_CHANGE_REPORT'
-            # siehe parameter_selected.json    #  get bpSoc from ems_change
         
             sensors = self.__get_sensors_ems_change(self.slave_data, sensors, self.slave_sn, slave_string)
 
-            _LOGGER.debug(f"change_sensors_found__{sensors}")
-            _LOGGER.debug(f"change_sensors_found__{list(sensors)}")
 
             # get info from slave batteries  => JTS1_BP_STA_REPORT
             sensors = self.__get_sensors_battery(self.slave_data, sensors, self.slave_sn, slave_string)
         
-            _LOGGER.debug(f"battery_sensors_found__{sensors}")
-            _LOGGER.debug(f"battery_sensors_found__{list(sensors)}")
-
             # get info from slave PV strings  => JTS1_EMS_HEARTBEAT
             sensors = self.__get_sensors_ems_heartbeat(self.slave_data, sensors, self.slave_sn, slave_string)
         
-            _LOGGER.debug(f"full_sensors__{sensors}")
-            _LOGGER.debug(f"full_sensors__{list(sensors)}")
+        _LOGGER.debug(f"log_full_sensor_details__{sensors}")
+        _LOGGER.debug(f"log_sensor_friendly_names__{list(sensors)}")
         
 
         return sensors
@@ -338,10 +332,10 @@ class Ecoflow:
     #     return sensors
 
     def __get_sensors_ems_change(self, inverter_dataset, sensors, inverter_sn, inverter_string):
+        # function modified to process either master or slave segment
+        
         report = "JTS1_EMS_CHANGE_REPORT"
         d = inverter_dataset[report]
-
-        _LOGGER.debug(f"inverter_change_subset__{d}")
 
 
         sens_select = [
@@ -355,7 +349,6 @@ class Ecoflow:
         # add mppt Warning/Fault Codes
         keys = d.keys()
 
-        _LOGGER.debug(f"inverter_change_subset_keys__{keys}")
         
         r = re.compile("mppt.*Code")
         wfc = list(filter(r.match, keys))  # warning/fault code keys
@@ -367,9 +360,6 @@ class Ecoflow:
                 # default uid, unit and descript
                 unique_id = f"{inverter_sn}_{report}_{key}"
 
-                _LOGGER.debug(f"inverter_change_subset_key_found__{key}")
-
-
                 data[unique_id] = PowerOceanEndPoint(
                     internal_unique_id=unique_id,
                     serial=inverter_sn,
@@ -380,21 +370,19 @@ class Ecoflow:
                     description=self.__get_description(key),
                     icon=None,
                 )
-        _LOGGER.debug(f"inverter_change_additions__{data}")
-        _LOGGER.debug(f"sensors_before__{list(sensors)}")
         dict.update(sensors, data)
-        _LOGGER.debug(f"sensors_after__{list(sensors)}")
         
         return sensors
 
     def __get_sensors_battery(self, inverter_data, sensors, inverter_sn, inverter_string):
+        
+        # function modified to process either master or slave segment
+
         report = "JTS1_BP_STA_REPORT"
         # change to process inverter data set
         
         d = inverter_data[report]
         
-        _LOGGER.debug(f"inverter_battery_subset__{d}")
-
         keys = list(d.keys())
 
         # loop over N batteries:
@@ -455,10 +443,11 @@ class Ecoflow:
         return sensors
 
     def __get_sensors_ems_heartbeat(self, inverter_data, sensors, inverter_sn, inverter_string):
+        
+        # function modified to process either master or slave segment
+
         report = "JTS1_EMS_HEARTBEAT"
         d = inverter_data[report]
-
-        _LOGGER.debug(f"inverter_heartbeat_subset__{d}")
 
         # sens_select = d.keys()  # 68 Felder
         sens_select = [
