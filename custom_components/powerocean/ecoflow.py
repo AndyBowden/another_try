@@ -90,13 +90,14 @@ class Ecoflow:
 
     def get_json_response(self, request):
         """Function get json response"""
+        _LOGGER.debug(f"Got HTTP status code before if {request.status_code}: {request.text}")
         if request.status_code != 200:
             raise Exception(
                 f"Got HTTP status code {request.status_code}: {request.text}"
             )
             _LOGGER.debug(f"Got HTTP status code {request.status_code}: {request.text}")
         try:
-            _LOGGER.debug(f"request_was_{request.text}")
+            _LOGGER.debug(f"request_is_{request.text}")
 
             response = json_loads(request.text)
             _LOGGER.debug(f"response_was_{response}")
