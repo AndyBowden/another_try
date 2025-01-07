@@ -94,8 +94,14 @@ class Ecoflow:
             raise Exception(
                 f"Got HTTP status code {request.status_code}: {request.text}"
             )
+            _LOGGER.debug(f"Got HTTP status code {request.status_code}: {request.text}")
         try:
+            _LOGGER.debug(f"request_was_{request.text}")
+
             response = json_loads(request.text)
+            _LOGGER.debug(f"response_was_{response}")
+
+            
             response_message = response["message"]
         except KeyError as key:
             raise Exception(
