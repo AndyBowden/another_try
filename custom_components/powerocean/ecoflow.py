@@ -67,6 +67,8 @@ class Ecoflow:
             url = self.url_iot_app
             _LOGGER.info("Login to EcoFlow API %s", {url})
             request = requests.post(url, json=data, headers=headers)
+            _LOGGER.debug(f"authorisation request is_{request}")
+            
             response = self.get_json_response(request)
 
         except ConnectionError:
@@ -126,6 +128,8 @@ class Ecoflow:
         try:
             headers = {"authorization": f"Bearer {self.token}"}
             request = requests.get(self.url_user_fetch, headers=headers, timeout=30)
+            _LOGGER.debug(f"fetch request is_{request}")
+            
             response = self.get_json_response(request)
 
             _LOGGER.debug(f"{response}")
