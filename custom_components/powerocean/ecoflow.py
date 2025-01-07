@@ -66,6 +66,7 @@ class Ecoflow:
         try:
             url = self.url_iot_app
             _LOGGER.info("Login to EcoFlow API %s", {url})
+            _LOGGER.debug(f"authorisation request with headers_{headers}")
             request = requests.post(url, json=data, headers=headers)
             _LOGGER.debug(f"authorisation request is_{request}")
             
@@ -127,6 +128,7 @@ class Ecoflow:
         url = self.url_user_fetch
         try:
             headers = {"authorization": f"Bearer {self.token}"}
+            _LOGGER.debug(f"fetch request headers_{headers}")
             request = requests.get(self.url_user_fetch, headers=headers, timeout=30)
             _LOGGER.debug(f"fetch request is_{request}")
             
