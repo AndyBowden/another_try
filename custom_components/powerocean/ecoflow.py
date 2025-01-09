@@ -550,7 +550,7 @@ class Ecoflow:
       
         p = response["data"]
 
-        _LOGGER.debug(f"master_SNo_{self.sn}")
+        _LOGGER.debug(f"get_serial_numbers_master_SNo_{self.sn}")
 
         if 'parallel' in p.keys():
             # installation is dual inverter one
@@ -567,9 +567,12 @@ class Ecoflow:
         # slave serial number is the first key of the 'data' segment
         self.slave_sn = next(iter(keys_2))
 
+        _LOGGER.debug(f"get_serial_numbers_first_SNo_{self.sn}")
+        
+
         # master serial number is the last key of the 'data' segment
         self.master_sn = next(reversed(keys_2))
-
+        _LOGGER.debug(f"get_serial_numbers_second_SNo_{self.sn}")
         # create master inverter segment
 
         self.master_data = response["data"]["parallel"][self.master_sn]
