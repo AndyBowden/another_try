@@ -1,6 +1,6 @@
 """ecoflow.py: API for PowerOcean integration."""
 # modification of niltrip's version to provide for Power Ocean Dual Master/Slave Inverter Installations
-# Andy Bowden Jan91 2025 
+# Andy Bowden Jan 2025 
 
 import requests
 import base64
@@ -550,8 +550,6 @@ class Ecoflow:
       
         p = response["data"]
 
-        _LOGGER.debug(f"get_serial_numbers_master_SNo_{self.sn}")
-
         if 'parallel' in p.keys():
             # installation is dual inverter one
             # p portion of response contains master and slave segments
@@ -567,13 +565,9 @@ class Ecoflow:
         # slave serial number is the first key of the 'data' segment
         self.slave_sn = next(iter(keys_2))
 
-        _LOGGER.debug(f"getx_serial_numbers_first_SNo_{self.slave_sn}")
-        _LOGGER.debug(f"keys_{list(keys_2}")
-        
-
         # master serial number is the last key of the 'data' segment
         self.master_sn = next(reversed(keys_2))
-        _LOGGER.debug(f"get_serial_numbers_second_SNo_{self.master_sn}")
+
         # create master inverter segment
 
         self.master_data = response["data"]["parallel"][self.master_sn]
@@ -590,6 +584,9 @@ class Ecoflow:
 
         return len(p)
   
+
+
+
 
 class AuthenticationFailed(Exception):
     """Exception to indicate authentication failure."""
