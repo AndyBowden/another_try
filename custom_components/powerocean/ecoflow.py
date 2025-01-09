@@ -1,6 +1,6 @@
 """ecoflow.py: API for PowerOcean integration."""
 # modification of niltrip's version to provide for Power Ocean Dual Master/Slave Inverter Installations
-# Andy Bowden Jan 2025 
+# Andy Bowden Jan-2 2025 
 
 import requests
 import base64
@@ -547,6 +547,8 @@ class Ecoflow:
 
         # extra function to determine whether installation installation has single or dual inverter
         # and to create master and slave response segments
+
+        _LOGGER.debug(f"master_sno_is_{list(self.sn)}")
       
         p = response["data"]
 
@@ -562,19 +564,26 @@ class Ecoflow:
         # get keys of the 'data' segment
         keys_2 = p.keys()
     
-        # slave serial number is the first key of the 'data' segment
-        self.slave_sn = next(iter(keys_2))
+        # get first serial number key of the 'data' segment
+        self.first_sn = next(iter(keys_2))
 
-        # master serial number is the last key of the 'data' segment
-        self.master_sn = next(reversed(keys_2))
+        # get second serial number key of the 'data' segment
+        self.second_sn = next(reversed(keys_2))
 
-        # create master inverter segment
-
-        self.master_data = response["data"]["parallel"][self.master_sn]
+        self.first_data = response["data"]["parallel"][self.first_sn]
+        self.second_data = response["data"]["parallel"][self.second_sn]
         
-        # create slave inverter segment
-
-        self.slave_data = response["data"]["parallel"][self.slave_sn]
+        
+        if self.first_sn == self.sn:
+            _LOGGER.debug(f"master_is_first}")
+# assign first data segment to master and second to slave
+            self.master_data = self.first_data
+            self.slave_data = self.second_data
+        else:
+            _LOGGER.debug(f"master_is_second}")
+# assign first data segment to slave and second to master
+            self.master_data = self.second_data
+            self.slave_data = self.first_data
 
         # return number of segments of the 'parallel' segment
         
