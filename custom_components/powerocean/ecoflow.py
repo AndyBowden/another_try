@@ -576,12 +576,12 @@ class Ecoflow:
         
         if self.first_sn == self.sn:
             _LOGGER.debug(f"master_is_first}")
-# assign first data segment to master and second to slave
+            # assign first data segment to master and second to slave
             self.master_data = self.first_data
             self.slave_data = self.second_data
         else:
             _LOGGER.debug(f"master_is_second}")
-# assign first data segment to slave and second to master
+            # assign first data segment to slave and second to master
             self.master_data = self.second_data
             self.slave_data = self.first_data
 
@@ -593,9 +593,5 @@ class Ecoflow:
 
         return len(p)
   
-
-
-
-
 class AuthenticationFailed(Exception):
     """Exception to indicate authentication failure."""
