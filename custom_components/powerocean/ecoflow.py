@@ -567,7 +567,7 @@ class Ecoflow:
         # slave serial number is the first key of the 'data' segment
         self.slave_sn = next(iter(keys_2))
 
-        _LOGGER.debug(f"get_serial_numbers_first_SNo_{self.slave_sn}")
+        _LOGGER.debug(f"getx_serial_numbers_first_SNo_{self.slave_sn}")
         _LOGGER.debug(f"keys_{list(keys_2}")
         
 
